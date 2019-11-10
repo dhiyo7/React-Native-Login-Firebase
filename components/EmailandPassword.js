@@ -1,5 +1,6 @@
 //import liraries
 import React, { Component } from 'react';
+import firebase from 'firebase';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 import { Dimensions } from "react-native";
 
@@ -12,7 +13,25 @@ class EmailandPassword extends Component {
     state={
         email:'',
         password:'',
-        error:'Login Failed'
+        error:'',
+        loading:false
+    }
+
+    onBottomPress = () => {
+        firebase.auth().signInWithEmailAndPassword(this.state.email,this.state.password)
+        .then(this.onLoginSuccess)
+        .catch(err =>{
+            this.setState({
+                error:err.message
+            })
+        })
+    }
+
+    onLoginSuccess = () => {
+        this.setState({
+            error: '',
+            loading:false
+        })
     }
 
     render(){
@@ -32,12 +51,13 @@ class EmailandPassword extends Component {
                 alue={this.state.password}
                 onChangeText={password=> this.setState({password})}></TextInput>
     
-                <TouchableOpacity>
-                    <Text style={styles.errorInput}>
-                        {this.state.error}
-                    </Text>
+                <TouchableOpacity style={styles.buttonContainer} onPress={this.onBottomPress}>
+                    <Text style={styles.buttonText}> Login </Text>
                 </TouchableOpacity>
 
+                <Text style={styles.errorInput}>
+                    {this.state.error}
+                </Text>
             </View>  
         );
     }   
@@ -61,6 +81,18 @@ const styles = StyleSheet.create({
         fontSize:15,
         color:'red',
         alignSelf:'center'
+    },
+    buttonText:{
+        textAlign:'center',
+        color:'white',
+        fontWeight:'bold',
+        fontSize: 20
+    },
+    buttonContainer:{
+        backgroundColor:'#027ab0',
+        padding: 7,
+        margin:7,
+        borderRadius:7
     }
 });
 
